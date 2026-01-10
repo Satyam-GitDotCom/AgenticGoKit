@@ -1,0 +1,24 @@
+Memory Profile
+================================================================================
+
+Top 20 memory allocations:
+<frozen importlib._bootstrap_external>:753: size=2196 KiB, count=17344, average=130 B
+/usr/lib/python3.12/cProfile.py:89: size=882 KiB, count=8484, average=106 B
+/usr/lib/python3.12/cProfile.py:57: size=404 KiB, count=16927, average=24 B
+/usr/lib/python3.12/cProfile.py:128: size=309 KiB, count=6029, average=52 B
+/usr/lib/python3.12/linecache.py:137: size=281 KiB, count=2961, average=97 B
+<frozen abc>:106: size=277 KiB, count=878, average=323 B
+/usr/lib/python3.12/cProfile.py:69: size=264 KiB, count=2459, average=110 B
+/usr/lib/python3.12/pstats.py:264: size=219 KiB, count=2002, average=112 B
+/usr/lib/python3.12/dataclasses.py:473: size=175 KiB, count=1945, average=92 B
+/usr/lib/python3.12/cProfile.py:67: size=159 KiB, count=2537, average=64 B
+/home/kunal/work/examples/langchain-agent/venv/lib/python3.12/site-packages/pydantic_core/core_schema.py:4333: size=121 KiB, count=1814, average=68 B
+/home/kunal/work/examples/langchain-agent/venv/lib/python3.12/site-packages/pydantic/fields.py:563: size=92.5 KiB, count=513, average=185 B
+<frozen abc>:123: size=57.7 KiB, count=661, average=89 B
+<string>:0: size=57.6 KiB, count=820, average=72 B
+/usr/lib/python3.12/typing.py:897: size=57.3 KiB, count=638, average=92 B
+/home/kunal/work/examples/langchain-agent/venv/lib/python3.12/site-packages/typing_inspection/introspection.py:444: size=48.5 KiB, count=230, average=216 B
+/home/kunal/work/examples/langchain-agent/venv/lib/python3.12/site-packages/pydantic/fields.py:829: size=45.2 KiB, count=419, average=110 B
+<frozen importlib._bootstrap>:488: size=36.8 KiB, count=348, average=108 B
+<string>:1: size=35.0 KiB, count=533, average=67 B
+<frozen abc>:107: size=33.7 KiB, count=219, average=157 B

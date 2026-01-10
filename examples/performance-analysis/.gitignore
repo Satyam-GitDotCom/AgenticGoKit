@@ -1,0 +1,39 @@
+# Python environments
+langchain-agent/venv/
+.env
+.venv/
+venv/
+env/
+
+# Python bytecode and caches
+**/__pycache__/
+**/*.py[cod]
+*.pyo
+
+# Jupyter checkpoints
+**/.ipynb_checkpoints/
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs, traces, and profiles
+**/*.log
+**/*.prof
+**/*.out
+**/*.trace
+
+# Generated benchmark outputs (text/csv)
+comparison_*/**/*.txt
+comparison_*/**/*.csv
+RESULTS_SUMMARY.txt
+
+# Compiled binaries in simple-agent
+simple-agent/agent-profile
+simple-agent/weather-profile
+simple-agent/weather-tool
+
+# Misc
+.DS_Store
