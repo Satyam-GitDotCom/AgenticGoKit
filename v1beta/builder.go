@@ -744,10 +744,27 @@ func (b *streamlinedBuilder) setupObservability(agent Agent) error {
 		return nil // Observability not enabled
 	}
 
-	// Generate unique run ID
+	// If tracer already initialized by workflow, reuse run ID and skip setup
+	if os.Getenv("AGK_TRACER_READY") == "1" {
+		runID := os.Getenv("AGK_RUN_ID")
+		if runID == "" {
+			runID = fmt.Sprintf("run-%d", time.Now().UnixNano())
+		}
+
+		if realAgent, ok := agent.(*realAgent); ok {
+			realAgent.runID = runID
+			if path := os.Getenv("AGK_TRACE_FILEPATH"); path != "" {
+				realAgent.runDir = filepath.Dir(path)
+			}
+			fmt.Printf("🔍 Tracing enabled (workflow-owned): runID=%s\n", runID)
+		}
+		return nil
+	}
+
+	// Generate run ID for this agent
 	runID := fmt.Sprintf("run-%d", time.Now().UnixNano())
-	ctx := context.Background()
-	ctx = observability.WithRunID(ctx, runID)
+
+	ctx := observability.WithRunID(context.Background(), runID)
 
 	// Read tracing configuration from environment
 	exporter := os.Getenv("AGK_TRACE_EXPORTER")

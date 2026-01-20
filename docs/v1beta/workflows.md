@@ -12,6 +12,7 @@ Connect multiple agents in different execution patterns to orchestrate complex t
 - Reusable subworkflow composition
 - **Shared memory across agents with automatic context querying**
 - Error isolation and partial result tracking
+- **Built-in observability** with distributed tracing and span hierarchies
 
 ---
 
@@ -756,6 +757,109 @@ pipeline1.AddStep(v1beta.WorkflowStep{Name: "validate", Agent: validationAsAgent
 pipeline2, _ := v1beta.NewSequentialWorkflow(config2)
 pipeline2.AddStep(v1beta.WorkflowStep{Name: "validate", Agent: validationAsAgent})
 ```
+
+---
+
+## Observability
+
+All workflows include built-in observability with distributed tracing. Track execution flow, step timing, token usage, and performance metrics automatically.
+
+### What Gets Traced
+
+**Sequential Workflow:**
+```
+agk.workflow.sequential (1000ms)
+├── agk.workflow.step: "extract" (300ms)
+│   └── agk.agent.run
+│       └── llm.openai.call
+├── agk.workflow.step: "transform" (400ms)
+└── agk.workflow.step: "load" (300ms)
+```
+
+**Parallel Workflow:**
+```
+agk.workflow.parallel (600ms)
+├── agk.workflow.step: "task1" (400ms, concurrent)
+├── agk.workflow.step: "task2" (350ms, concurrent)
+└── agk.workflow.sync (0ms)
+```
+
+**DAG Workflow:**
+```
+agk.workflow.dag (1500ms)
+├── agk.workflow.stage: #1 (200ms)
+│   └── agk.workflow.step: "collect"
+├── agk.workflow.stage: #2 (400ms)
+│   ├── agk.workflow.step: "process1"
+│   └── agk.workflow.step: "process2"
+└── agk.workflow.stage: #3 (300ms)
+    └── agk.workflow.step: "aggregate"
+```
+
+**Loop Workflow:**
+```
+agk.workflow.loop (2000ms)
+├── agk.workflow.iteration: #1 (420ms)
+│   └── agk.workflow.condition_check (satisfied: false)
+├── agk.workflow.iteration: #2 (380ms)
+│   └── agk.workflow.condition_check (satisfied: true)
+└── agk.workflow.exit_reason: "condition_met"
+```
+
+**Subworkflow Composition:**
+```
+agk.workflow.sequential: "main" (1800ms)
+- [Observability](./observability.md) - Distributed tracing and workflow visibility
+└── agk.workflow.step: "analysis" (1000ms)
+    └── agk.subworkflow.run: "analysis" (980ms)
+        ├─ agk.subworkflow.path: "main/analysis"
+        ├─ agk.subworkflow.depth: 1
+        └── agk.workflow.parallel (960ms)
+```
+
+### View Traces
+
+```bash
+# List all workflow runs
+agk trace list
+
+# Show workflow trace with full hierarchy
+agk trace show <run-id>
+
+# Filter workflow-specific spans
+agk trace show <run-id> --filter workflow
+
+# View in Jaeger UI
+agk trace view <run-id>
+```
+
+### Captured Metrics
+
+**Workflow-level:**
+- Execution mode (sequential, parallel, dag, loop)
+- Total duration
+- Step count
+- Completed steps
+- Token usage across all agents
+- Success/failure status
+
+**Step-level:**
+- Step name and index
+- Input/output sizes
+- Execution latency
+- Token usage
+- Success status
+- Skip reason (if skipped)
+
+**Subworkflow-level:**
+- Subworkflow name
+- Hierarchical path (e.g., "main/analysis/parallel")
+- Nesting depth
+- Wrapped workflow mode
+- Steps executed
+- Total tokens
+
+See the [Observability Guide](./observability.md) for complete tracing details.
 
 ---
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -12,34 +13,38 @@ import (
 
 // CreateResearcherAgent creates a research agent
 func CreateResearcherAgent() (vnext.Agent, error) {
-	return vnext.QuickChatAgentWithConfig("Researcher", &vnext.Config{
-		Name:         "researcher",
-		SystemPrompt: "You are a Research Agent. Provide detailed information about the given topic. Be thorough and informative.",
-		Timeout:      60 * time.Second, // Increased timeout for workflow
-		LLM: vnext.LLMConfig{
-			Provider:    "ollama",
-			Model:       "gemma3:1b",
-			Temperature: 0.2,
-			MaxTokens:   300,
-			BaseURL:     "http://localhost:11434",
-		},
-	})
+	return vnext.NewBuilder("Researcher").
+		WithConfig(&vnext.Config{
+			Name:         "researcher",
+			SystemPrompt: "You are a Research Agent. Provide detailed information about the given topic. Be thorough and informative.",
+			Timeout:      60 * time.Second,
+			LLM: vnext.LLMConfig{
+				Provider:    "ollama",
+				Model:       "gemma3:1b",
+				Temperature: 0.2,
+				MaxTokens:   300,
+				BaseURL:     "http://localhost:11434",
+			},
+		}).
+		Build()
 }
 
 // CreateSummarizerAgent creates a summarizer agent
 func CreateSummarizerAgent() (vnext.Agent, error) {
-	return vnext.QuickChatAgentWithConfig("Summarizer", &vnext.Config{
-		Name:         "summarizer",
-		SystemPrompt: "You are a Summarizer Agent. Create concise summaries of the given content. Focus on key points and main takeaways.",
-		Timeout:      60 * time.Second, // Increased timeout for workflow
-		LLM: vnext.LLMConfig{
-			Provider:    "ollama",
-			Model:       "gemma3:1b",
-			Temperature: 0.3,
-			MaxTokens:   150,
-			BaseURL:     "http://localhost:11434",
-		},
-	})
+	return vnext.NewBuilder("Summarizer").
+		WithConfig(&vnext.Config{
+			Name:         "summarizer",
+			SystemPrompt: "You are a Summarizer Agent. Create concise summaries of the given content. Focus on key points and main takeaways.",
+			Timeout:      60 * time.Second,
+			LLM: vnext.LLMConfig{
+				Provider:    "ollama",
+				Model:       "gemma3:1b",
+				Temperature: 0.3,
+				MaxTokens:   150,
+				BaseURL:     "http://localhost:11434",
+			},
+		}).
+		Build()
 }
 
 // RunSequentialWorkflowWithVNextStreaming demonstrates the FIXED vnext.Workflow streaming
@@ -48,6 +53,10 @@ func RunSequentialWorkflowWithVNextStreaming() {
 	fmt.Println("===========================================")
 	fmt.Println("Using real vnext.Workflow with streaming support!")
 	fmt.Println()
+
+	// Disable tracing while constructing agents to avoid per-agent traces
+	prevTrace := os.Getenv("AGK_TRACE")
+	os.Setenv("AGK_TRACE", "false")
 
 	// Create agents
 	researcher, err := CreateResearcherAgent()
@@ -68,6 +77,9 @@ func RunSequentialWorkflowWithVNextStreaming() {
 	if err != nil {
 		log.Fatalf("Failed to create workflow: %v", err)
 	}
+
+	// Re-enable tracing for workflow execution
+	os.Setenv("AGK_TRACE", prevTrace)
 
 	// Add workflow steps
 	err = workflow.AddStep(vnext.WorkflowStep{
@@ -180,20 +192,29 @@ func main() {
 	fmt.Println("Demonstrating the FIXED vnext.Workflow streaming!")
 	fmt.Println()
 
-	// Quick connection test
+	// Enable tracing for the workflow, but disable it for the quick test agent
+	// to avoid creating extra run IDs before the actual workflow run.
+	os.Setenv("AGK_TRACE", "true")
+
+	prevTrace := os.Getenv("AGK_TRACE")
+	os.Setenv("AGK_TRACE", "false")
 	fmt.Println("🔍 Testing Ollama connection...")
-	testAgent, err := vnext.QuickChatAgentWithConfig("Test", &vnext.Config{
-		Name:    "test",
-		Timeout: 10 * time.Second,
-		LLM: vnext.LLMConfig{
-			Provider: "ollama",
-			Model:    "gemma3:1b",
-			BaseURL:  "http://localhost:11434",
-		},
-	})
+	testAgent, err := vnext.NewBuilder("Test").
+		WithConfig(&vnext.Config{
+			Name:    "test",
+			Timeout: 10 * time.Second,
+			LLM: vnext.LLMConfig{
+				Provider: "ollama",
+				Model:    "gemma3:1b",
+				BaseURL:  "http://localhost:11434",
+			},
+		}).
+		Build()
 	if err != nil {
 		log.Fatalf("Failed to create test agent: %v", err)
 	}
+	// Restore tracing for the workflow run
+	os.Setenv("AGK_TRACE", prevTrace)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -217,6 +238,3 @@ func main() {
 	fmt.Println("• 🎯 Cleaner, more maintainable code")
 	fmt.Println("• 🚀 Better performance and reliability")
 }
-
-
-

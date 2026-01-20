@@ -172,6 +172,104 @@ func Clone() Builder { ... }
 
 Create a copy of the builder for reuse with different configurations.
 
+### Observability Configuration
+
+Observability is configured through **environment variables** or the `Builder.WithObservability()` method. 
+
+**Note:** `WithObservability()` is a **Builder method**, not an `Option`, so it's only available with `NewBuilder()`, not with `NewChatAgent()` or other factory functions.
+
+#### Environment Variables (Recommended)
+
+```bash
+# Enable tracing (required)
+export AGK_TRACE=true
+
+# Set exporter type (optional, default: file)
+export AGK_TRACE_EXPORTER=otlp  # Options: console, file, otlp
+
+# OTLP endpoint (for otlp exporter)
+export AGK_TRACE_ENDPOINT=http://localhost:4318
+
+# File path (for file exporter, auto-generated if not set)
+export AGK_TRACE_FILEPATH=.agk/runs/trace.jsonl
+
+# Sample rate: 0.0 to 1.0 (optional, default: 1.0)
+export AGK_TRACE_SAMPLE=1.0
+
+# Environment name (optional, default: dev)
+export AGK_ENV=production
+```
+
+**Example with NewChatAgent:**
+```go
+// Enable tracing via environment variable
+os.Setenv("AGK_TRACE", "true")
+os.Setenv("AGK_TRACE_EXPORTER", "otlp")
+os.Setenv("AGK_TRACE_ENDPOINT", "http://localhost:4318")
+
+agent, err := v1beta.NewChatAgent("Assistant",
+    v1beta.WithLLM("openai", "gpt-4"),
+)
+```
+
+#### Builder Method (Alternative)
+
+For programmatic control when using `NewBuilder()`:
+
+```go
+agent, err := v1beta.NewBuilder("Assistant").
+    WithObservability("my-service", "1.0.0").  // serviceName, serviceVersion
+    Build()
+if err != nil {
+    log.Fatal(err)
+}
+defer agent.Cleanup(context.Background())
+```
+
+**TracingConfig Struct (Actual Definition):**
+```go
+// Note: This is the actual struct in v1beta/config.go
+type TracingConfig struct {
+    Enabled bool   `toml:"enabled"`  // Enable tracing
+    Level   string `toml:"level"`    // Trace level: none, basic, enhanced, debug
+}
+```
+
+The full configuration (exporter, endpoint, sample rate) is controlled via environment variables, not the TracingConfig struct.
+
+**What Gets Traced:**
+
+When observability is enabled, the following are automatically instrumented:
+
+- **Agent execution**: `agk.agent.run` spans with input/output sizes, tokens, success status
+- **LLM calls**: Provider-specific spans (e.g., `llm.openai.call`) with model, temperature, token usage, latency
+- **Tool execution**: `agk.tool.call` spans with input/output sizes, latency
+- **MCP tools**: `agk.mcp.tool.call` spans with server info, content counts
+- **Workflows**: 
+  - Sequential: `agk.workflow.sequential` with step hierarchy
+  - Parallel: `agk.workflow.parallel` with concurrency tracking
+  - DAG: `agk.workflow.dag` with stage and dependency tracking
+  - Loop: `agk.workflow.loop` with iteration and convergence tracking
+- **Subworkflows**: `agk.subworkflow.run` spans with hierarchical path and nesting depth
+
+**Viewing Traces:**
+
+```bash
+# List all runs
+agk trace list
+
+# Show specific trace
+agk trace show <run-id>
+
+# View in Jaeger UI
+agk trace view <run-id>
+
+# Export to JSON
+agk trace export <run-id> --format json
+```
+
+See the [Observability Guide](./observability.md) for complete documentation on tracing, exporters, and integration with Jaeger/Tempo.
+
 ## 🎮 Runtime Options
 
 Runtime options allow you to override configuration per execution without rebuilding the agent. Pass `RunOptions` to `agent.RunWithOptions()`.

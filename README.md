@@ -23,6 +23,7 @@
 - **Multimodal Support**: Native support for images, audio, and video inputs alongside text
 - **Real-time Streaming**: Watch your agents think and respond in real-time  
 - **Multi-Agent Workflows**: Sequential, parallel, DAG, and loop orchestration patterns
+- **Production-Ready Observability**: Built-in distributed tracing with OpenTelemetry support
 - **Multiple LLM Providers**: Seamlessly switch between OpenAI, Ollama, Azure OpenAI, HuggingFace, and more
 - **High Performance**: Compiled Go binaries with minimal overhead
 - **Batteries Included**: Built-in memory and RAG by default (zero config needed, swappable with pgvector/custom)
@@ -74,6 +75,11 @@ func main() {
 }
 ```
 
+**Enable observability with a single environment variable:**
+```bash
+export AGK_TRACE=true  # Automatic tracing to .agk/runs/<run-id>/trace.jsonl
+```
+
 > **Note:** The `agentcli` scaffolding tool is being deprecated and will be replaced by the `agk` CLI in a future release.
 
 ## Core Capabilities
@@ -100,6 +106,12 @@ Native support for Images, Audio, and Video inputs. Works seamlessly with models
 ### 🛠️ [Tool Integration](docs/v1beta/tool-integration.md)
 Extend agents with tools using standard Go functions or the **Model Context Protocol (MCP)** for standardized tool discovery.
 
+### 👁️ [Observability & Tracing](docs/v1beta/observability.md)
+**Production-Ready**: Built-in distributed tracing with zero configuration required.
+- **Features**: OpenTelemetry integration, workflow trace hierarchies, OTLP/Jaeger support.
+- **Exporters**: Console, file, and OTLP for complete visibility into agent execution.
+- **Example**: [Observability Basics](docs/v1beta/examples/observability-basic.md)
+
 ## Supported LLM Providers
 
 AgenticGoKit works with all major LLM providers out of the box:
@@ -121,6 +133,7 @@ AgenticGoKit works with all major LLM providers out of the box:
 ### 📚 Documentation
 - **[Getting Started](docs/v1beta/getting-started.md)** - Build your first agent
 - **[API Reference](v1beta/README.md)** - Comprehensive API docs
+- **[Observability Guide](docs/v1beta/observability.md)** - Distributed tracing and monitoring
 - **[Memory & RAG](docs/v1beta/memory-and-rag.md)** - Deep dive into memory systems
 
 ### 💡 Examples

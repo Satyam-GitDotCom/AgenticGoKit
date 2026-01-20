@@ -29,6 +29,7 @@ Explore the main features:
 - [Workflows](./workflows.md) - Multi-agent orchestration patterns
 - [Memory & RAG](./memory-and-rag.md) - Memory integration and retrieval-augmented generation
 - [Tool Integration](./tool-integration.md) - Tool registration and MCP support
+- [Observability](./observability.md) - Distributed tracing and structured logging
 
 ### Advanced Topics
 - [Error Handling](./error-handling.md) - Error patterns and best practices
@@ -74,6 +75,13 @@ AgenticGoKit provides a modern, streamlined API with:
 - **Multiple backends**: In-memory, PostgreSQL (pgvector), Weaviate
 - **RAG support** with configurable weights
 - **Session management** and history tracking
+
+### Production-Ready Observability
+- **Distributed tracing** with OpenTelemetry
+- **Workflow visibility** for Sequential, Parallel, DAG, Loop patterns
+- **Subworkflow tracking** with hierarchical nesting
+- **Multiple exporters**: Console, File, OTLP (Jaeger, Tempo)
+- **Complete visibility**: Agent execution, LLM calls, tool usage, workflows
 
 ### Comprehensive Tooling
 - **Tool registration** and discovery
@@ -150,6 +158,7 @@ v1beta/
 ├── streaming.md
 ├── workflows.md
 ├── memory-and-rag.md
+├── observability.md
 ├── configuration.md
 ├── custom-handlers.md
 ├── tool-integration.md

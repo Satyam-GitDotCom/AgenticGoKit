@@ -197,6 +197,11 @@ Enable agents to store and retrieve custom knowledge, documents, and long-term f
 
 **→ [Memory & RAG](./memory-and-rag.md)**
 
+### 📊 Observability & Tracing
+Get complete visibility into agent execution with distributed tracing, workflow tracking, and LLM call metrics.
+
+**→ [Observability Guide](./observability.md)**
+
 ### 🎨 Custom Logic
 Write handlers to control exactly how agents process input (bypass LLM for certain queries, apply custom rules, etc.).
 
