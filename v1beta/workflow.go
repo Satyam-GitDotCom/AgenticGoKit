@@ -571,7 +571,7 @@ func (w *basicWorkflow) executeSequentialStreaming(ctx context.Context, input st
 
 		// Create step span
 		stepStartTime := time.Now()
-		_, stepSpan := tracer.Start(ctx, "agk.workflow.step",
+		stepCtx, stepSpan := tracer.Start(ctx, "agk.workflow.step",
 			trace.WithAttributes(
 				attribute.String(observability.AttrWorkflowStepName, step.Name),
 				attribute.Int(observability.AttrWorkflowStepIndex, i),
@@ -598,7 +598,7 @@ func (w *basicWorkflow) executeSequentialStreaming(ctx context.Context, input st
 		stepInput := currentInput
 		if step.Transform != nil {
 			transformStartTime := time.Now()
-			_, transformSpan := tracer.Start(ctx, "agk.workflow.transform",
+			_, transformSpan := tracer.Start(stepCtx, "agk.workflow.transform",
 				trace.WithAttributes(
 					attribute.String(observability.AttrWorkflowStepName, step.Name),
 					attribute.Int(observability.AttrWorkflowStepIndex, i),
@@ -613,7 +613,7 @@ func (w *basicWorkflow) executeSequentialStreaming(ctx context.Context, input st
 		}
 
 		// Execute step with streaming if agent supports it
-		stepResult, output, err := w.executeStepStreaming(ctx, step, stepInput, writer)
+		stepResult, output, err := w.executeStepStreaming(stepCtx, step, stepInput, writer)
 		stepDuration := time.Since(stepStartTime)
 		results = append(results, stepResult)
 
@@ -691,7 +691,7 @@ func (w *basicWorkflow) executeParallelStreaming(ctx context.Context, input stri
 			defer wg.Done()
 
 			stepStartTime := time.Now()
-			_, stepSpan := tracer.Start(ctx, "agk.workflow.step",
+			stepCtx, stepSpan := tracer.Start(ctx, "agk.workflow.step",
 				trace.WithAttributes(
 					attribute.String(observability.AttrWorkflowStepName, s.Name),
 					attribute.Int(observability.AttrWorkflowStepIndex, idx),
@@ -711,7 +711,7 @@ func (w *basicWorkflow) executeParallelStreaming(ctx context.Context, input stri
 			stepInput := input
 			if s.Transform != nil {
 				transformStartTime := time.Now()
-				_, transformSpan := tracer.Start(ctx, "agk.workflow.transform",
+				_, transformSpan := tracer.Start(stepCtx, "agk.workflow.transform",
 					trace.WithAttributes(
 						attribute.String(observability.AttrWorkflowStepName, s.Name),
 						attribute.Int(observability.AttrWorkflowStepIndex, idx),
@@ -725,7 +725,7 @@ func (w *basicWorkflow) executeParallelStreaming(ctx context.Context, input stri
 				transformSpan.End()
 			}
 
-			result, output, err := w.executeStepStreaming(ctx, s, stepInput, writer)
+			result, output, err := w.executeStepStreaming(stepCtx, s, stepInput, writer)
 			stepDuration := time.Since(stepStartTime)
 			results[idx] = result
 			outputs[idx] = output
