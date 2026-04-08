@@ -1,62 +1,65 @@
-# Ollama QuickStart Agent Example
+# Ollama QuickStart Agent - v1beta API
 
-> ⚠️ **IMPORTANT**: This example shows **API design only**. The vNext builder returns mock responses currently. For working LLM agents, use `core.SimpleAgent` (see [examples/01-simple-agent](../../01-simple-agent/)). Details in [IMPLEMENTATION_STATUS.md](../IMPLEMENTATION_STATUS.md).
-
-This example demonstrates the **QuickStart API** from AgenticGoKit vNext for creating agents with minimal code.
+This example demonstrates the streamlined **v1beta Builder API** from AgenticGoKit for creating Ollama-powered agents with minimal code.
 
 ## Features
 
-- ✅ Simplest possible agent creation using `QuickChatAgentWithConfig()`
-- ✅ Ollama integration for local LLM (when implemented)
-- ✅ Clean, minimal code (~50 lines)
-- ✅ Perfect for learning the API design
+- ✅ **Streamlined Builder Pattern**: Easy agent creation using `v1beta.NewBuilder()`
+- ✅ **Ollama Integration**: Seamless connection to local LLMs
+- ✅ **Clean Code**: Complete agent setup in under 50 lines
+- ✅ **Real LLM Responses**: Fully functional with local Ollama instances
+
+## Prerequisites
+
+1.  **Install Ollama**: Download and install from [ollama.com](https://ollama.com).
+2.  **Pull the Model**:
+    ```bash
+    ollama pull gpt-oss:20b-cloud
+    ```
+    *Note: You can use any available Ollama model; just update the model name in `main.go` accordingly.*
 
 ## Quick Start
 
 ```bash
-# Ensure Ollama is running and llama3.2 model is available
-ollama pull llama3.2
+# Navigate to the example directory
+cd examples/ollama-quickstart
 
 # Run the example
-cd examples/vnext/ollama-quickstart
 go run main.go
 ```
 
 ## Code Highlights
 
-### QuickStart Agent Creation
+### v1beta Builder Pattern
+
+The `v1beta` API uses a fluent builder pattern for a more ergonomic and flexible configuration.
 
 ```go
-// Initialize vNext framework
-vnext.InitializeDefaults()
+// Initialize defaults (optional but recommended)
+v1beta.InitializeDefaults()
 
-// Create config
-config := &vnext.Config{
+// Configure the agent
+config := &v1beta.Config{
     Name:         "quick-helper",
-    SystemPrompt: "You are a helpful assistant...",
-    LLM: vnext.LLMConfig{
+    SystemPrompt: "You are a helpful assistant that provides short, concise answers.",
+    LLM: v1beta.LLMConfig{
         Provider: "ollama",
-        Model:    "llama3.2",
+        Model:    "gpt-oss:20b-cloud",
     },
 }
 
-// Create agent with one line
-agent, err := vnext.QuickChatAgentWithConfig("llama3.2", config)
+// Create and build the agent
+agent, err := v1beta.NewBuilder(config.Name).
+    WithConfig(config).
+    WithLLM("ollama", "gpt-oss:20b-cloud"). // Override or set the model
+    Build()
 ```
 
-## When to Use QuickStart API
+## Framework Evolution
 
-✅ **Use QuickStart when:**
-- Building simple prototypes
-- Learning AgenticGoKit
-- Need fast agent creation
-- Single-purpose agents
+As part of the **v1.0 migration**, the `v1beta` API replaces the deprecated `core` and `core/vnext` packages. 
 
-❌ **Use Builder Pattern when:**
-- Complex agent configurations
-- Multi-agent systems
-- Need fine-grained control
-- Production applications
+✅ **Always use `v1beta` (which will become the stable `v1` package) for new development.**
 
 ## Next Steps
 

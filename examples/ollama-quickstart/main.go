@@ -6,26 +6,26 @@ import (
 	"log"
 	"time"
 
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 	_ "github.com/agenticgokit/agenticgokit/plugins/llm/ollama"
 )
 
 func main() {
 	fmt.Println("===========================================")
-	fmt.Println("  Ollama QuickStart Agent - vNext API")
+	fmt.Println("  Ollama QuickStart Agent - v1beta API")
 	fmt.Println("===========================================\n")
 
-	// Initialize vNext with defaults (optional but recommended)
-	if err := vnext.InitializeDefaults(); err != nil {
-		log.Fatalf("Failed to initialize vNext: %v", err)
+	// Initialize v1beta with defaults (optional but recommended)
+	if err := v1beta.InitializeDefaults(); err != nil {
+		log.Fatalf("Failed to initialize v1beta: %v", err)
 	}
 
 	// Quick way to create a chat agent with custom configuration
-	config := &vnext.Config{
+	config := &v1beta.Config{
 		Name:         "quick-helper",
 		SystemPrompt: "You are a helpful assistant that provides short, concise answers in 2-3 sentences.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "ollama",
 			Model:       "gpt-oss:20b-cloud",
 			Temperature: 0.3,
@@ -34,8 +34,11 @@ func main() {
 		},
 	}
 
-	// Create agent using QuickStart API
-	agent, err := vnext.QuickChatAgentWithConfig("llama3.2", config)
+	// Create agent using streamlined Builder API
+	agent, err := v1beta.NewBuilder(config.Name).
+		WithConfig(config).
+		WithLLM("ollama", "gpt-oss:20b-cloud").
+		Build()
 	if err != nil {
 		log.Fatalf("Failed to create agent: %v", err)
 	}
