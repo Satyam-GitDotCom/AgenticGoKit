@@ -523,7 +523,5 @@ Follow existing patterns in the codebase. When in doubt:
 
 ## Next Steps
 
-- **[Architecture Deep Dive](Architecture.md)** - Understand the internal structure
 - **[Testing Strategy](Testing.md)** - Learn our testing approaches
 - **[Adding Features](AddingFeatures.md)** - Detailed guide for extending AgenticGoKit
-- **[Release Process](ReleaseProcess.md)** - How we manage releases
