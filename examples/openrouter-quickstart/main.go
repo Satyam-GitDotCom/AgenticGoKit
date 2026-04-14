@@ -7,13 +7,13 @@ import (
 	"os"
 	"time"
 
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 	_ "github.com/agenticgokit/agenticgokit/plugins/llm/openrouter"
 )
 
 func main() {
 	fmt.Println("===========================================")
-	fmt.Println("  OpenRouter QuickStart - vNext API")
+	fmt.Println("  OpenRouter QuickStart - v1beta API")
 	fmt.Println("===========================================")
 	fmt.Println()
 
@@ -23,9 +23,9 @@ func main() {
 		log.Fatal("OPENROUTER_API_KEY environment variable not set. Please set it with your OpenRouter API key.")
 	}
 
-	// Initialize vNext with defaults (optional but recommended)
-	if err := vnext.InitializeDefaults(); err != nil {
-		log.Fatalf("Failed to initialize vNext: %v", err)
+	// Initialize v1beta with defaults (optional but recommended)
+	if err := v1beta.InitializeDefaults(); err != nil {
+		log.Fatalf("Failed to initialize v1beta: %v", err)
 	}
 
 	ctx := context.Background()
@@ -34,11 +34,11 @@ func main() {
 	fmt.Println("Example 1: Basic Agent with Config")
 	fmt.Println("====================================")
 
-	config1 := &vnext.Config{
+	config1 := &v1beta.Config{
 		Name:         "openrouter-assistant",
 		SystemPrompt: "You are a helpful assistant.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "openai/gpt-3.5-turbo",
 			APIKey:      apiKey, // Pass the API key from environment
@@ -47,7 +47,7 @@ func main() {
 		},
 	}
 
-	agent1, err := vnext.NewBuilder("openrouter-assistant").
+	agent1, err := v1beta.NewBuilder("openrouter-assistant").
 		WithConfig(config1).
 		Build()
 
@@ -73,11 +73,11 @@ func main() {
 	fmt.Println("==============================")
 
 	// Create a config first with API key
-	chatConfig := &vnext.Config{
+	chatConfig := &v1beta.Config{
 		Name:         "chat-bot",
 		SystemPrompt: "You are a conversational assistant focused on providing helpful and friendly responses",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "anthropic/claude-3-haiku",
 			APIKey:      apiKey, // Pass the API key
@@ -86,7 +86,7 @@ func main() {
 		},
 	}
 
-	chatAgent, err := vnext.NewBuilder("chat-bot").
+	chatAgent, err := v1beta.NewBuilder("chat-bot").
 		WithConfig(chatConfig).
 		Build()
 
@@ -111,11 +111,11 @@ func main() {
 	fmt.Println("Example 3: Streaming Responses")
 	fmt.Println("================================")
 
-	config3 := &vnext.Config{
+	config3 := &v1beta.Config{
 		Name:         "streaming-agent",
 		SystemPrompt: "You are a creative writing assistant.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "openai/gpt-3.5-turbo",
 			APIKey:      apiKey, // Pass the API key
@@ -124,7 +124,7 @@ func main() {
 		},
 	}
 
-	streamAgent, err := vnext.NewBuilder("streaming-agent").
+	streamAgent, err := v1beta.NewBuilder("streaming-agent").
 		WithConfig(config3).
 		Build()
 
@@ -139,8 +139,8 @@ func main() {
 
 	fmt.Print("Streaming response: ")
 	stream, err := streamAgent.RunStream(ctx, "Write a haiku about coding.",
-		vnext.WithBufferSize(10),
-		vnext.WithThoughts(),
+		v1beta.WithBufferSize(10),
+		v1beta.WithThoughts(),
 	)
 
 	if err != nil {
@@ -151,7 +151,7 @@ func main() {
 		if chunk.Error != nil {
 			log.Fatalf("Stream error: %v", chunk.Error)
 		}
-		if chunk.Type == vnext.ChunkTypeDelta {
+		if chunk.Type == v1beta.ChunkTypeDelta {
 			fmt.Print(chunk.Delta)
 		}
 	}
@@ -178,11 +178,11 @@ func main() {
 	}
 
 	for _, m := range models {
-		modelConfig := &vnext.Config{
+		modelConfig := &v1beta.Config{
 			Name:         m.name,
 			SystemPrompt: "You are a helpful assistant.",
 			Timeout:      30 * time.Second,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "openrouter",
 				Model:       m.model,
 				APIKey:      apiKey, // Pass the API key
@@ -191,7 +191,7 @@ func main() {
 			},
 		}
 
-		modelAgent, err := vnext.NewBuilder(m.name).
+		modelAgent, err := v1beta.NewBuilder(m.name).
 			WithConfig(modelConfig).
 			Build()
 
@@ -223,11 +223,11 @@ func main() {
 	fmt.Println("\nExample 5: Detailed Results with RunOptions")
 	fmt.Println("============================================")
 
-	config5 := &vnext.Config{
+	config5 := &v1beta.Config{
 		Name:         "detail-agent",
 		SystemPrompt: "You are a helpful assistant.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "openai/gpt-3.5-turbo",
 			APIKey:      apiKey, // Pass the API key
@@ -236,7 +236,7 @@ func main() {
 		},
 	}
 
-	detailAgent, err := vnext.NewBuilder("detail-agent").
+	detailAgent, err := v1beta.NewBuilder("detail-agent").
 		WithConfig(config5).
 		Build()
 
@@ -250,7 +250,7 @@ func main() {
 	defer detailAgent.Cleanup(ctx)
 
 	// Use RunOptions for detailed execution information
-	opts := vnext.RunWithDetailedResult().
+	opts := v1beta.RunWithDetailedResult().
 		SetTimeout(30*time.Second).
 		AddContext("request_id", "demo-123")
 
@@ -270,11 +270,11 @@ func main() {
 	fmt.Println("=================================================")
 
 	// Create a custom config with site tracking
-	trackingConfig := &vnext.Config{
+	trackingConfig := &v1beta.Config{
 		Name:         "tracked-agent",
 		SystemPrompt: "You are a helpful assistant.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "openai/gpt-3.5-turbo",
 			APIKey:      apiKey, // Pass the API key
@@ -286,7 +286,7 @@ func main() {
 		},
 	}
 
-	trackingAgent, err := vnext.NewBuilder("tracked-agent").
+	trackingAgent, err := v1beta.NewBuilder("tracked-agent").
 		WithConfig(trackingConfig).
 		Build()
 
@@ -317,7 +317,7 @@ func main() {
 	fmt.Println("\nExample 7: Custom Handler")
 	fmt.Println("==========================")
 
-	customHandler := func(ctx context.Context, input string, caps *vnext.Capabilities) (string, error) {
+	customHandler := func(ctx context.Context, input string, caps *v1beta.Capabilities) (string, error) {
 		// Custom logic: check for specific keywords
 		if len(input) < 10 {
 			// For short queries, add context via LLM
@@ -331,11 +331,11 @@ func main() {
 		return caps.LLM("You are a helpful assistant.", input)
 	}
 
-	config7 := &vnext.Config{
+	config7 := &v1beta.Config{
 		Name:         "custom-agent",
 		SystemPrompt: "You are a helpful assistant.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "openai/gpt-3.5-turbo",
 			APIKey:      apiKey, // Pass the API key
@@ -344,7 +344,7 @@ func main() {
 		},
 	}
 
-	customAgent, err := vnext.NewBuilder("custom-agent").
+	customAgent, err := v1beta.NewBuilder("custom-agent").
 		WithConfig(config7).
 		WithHandler(customHandler).
 		Build()
@@ -371,11 +371,11 @@ func main() {
 	fmt.Println("===========================================")
 
 	// Create config for a simple agent
-	config8 := &vnext.Config{
+	config8 := &v1beta.Config{
 		Name:         "simple-agent",
 		SystemPrompt: "You are a helpful assistant specialized in programming languages.",
 		Timeout:      30 * time.Second,
-		LLM: vnext.LLMConfig{
+		LLM: v1beta.LLMConfig{
 			Provider:    "openrouter",
 			Model:       "openai/gpt-3.5-turbo",
 			APIKey:      apiKey, // Pass the API key
@@ -384,7 +384,7 @@ func main() {
 		},
 	}
 
-	agent8, err := vnext.NewBuilder("simple-agent").
+	agent8, err := v1beta.NewBuilder("simple-agent").
 		WithConfig(config8).
 		Build()
 
@@ -404,7 +404,7 @@ func main() {
 	}
 
 	fmt.Println("\n===========================================")
-	fmt.Println("  OpenRouter vNext examples completed!")
+	fmt.Println("  OpenRouter v1beta examples completed!")
 	fmt.Println("===========================================")
 }
 
