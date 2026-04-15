@@ -313,7 +313,6 @@ Timeout: 60 * time.Second,  // Increase from 30s to 60s
 ## Related Documentation
 
 - [v1beta Framework README](../../docs/v1beta/README.md)
-- [OpenRouter Integration Design](../../../docs/design/OpenRouterIntegration.md)
 - [Streaming Guide](../../docs/v1beta/streaming.md)
 - [Migration Guide](../../docs/guides/migration-guide.md)
 
