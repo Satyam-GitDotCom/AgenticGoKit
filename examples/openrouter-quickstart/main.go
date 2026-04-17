@@ -30,6 +30,17 @@ func main() {
 
 	ctx := context.Background()
 
+	// NOTE: New builder-style API (from latest docs may not work in current v0.5.9 release):
+	// agent1, err := v1beta.NewBuilder().
+	//     WithName("openrouter-assistant").
+	//     WithLLM("openrouter", "openai/gpt-4o-mini").
+	//     WithAPIKey(apiKey).
+	//     WithSystemPrompt("You are a helpful assistant.").
+	//     WithTimeout(30 * time.Second).
+	//     WithTemperature(0.7).
+	//     WithMaxTokens(500).
+	//     Build()
+
 	// Example 1: Basic Usage with Config
 	fmt.Println("Example 1: Basic Agent with Config")
 	fmt.Println("====================================")
@@ -407,6 +418,3 @@ func main() {
 	fmt.Println("  OpenRouter v1beta examples completed!")
 	fmt.Println("===========================================")
 }
-
-
-
