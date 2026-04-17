@@ -69,6 +69,25 @@ agent, err := v1beta.NewBuilder("openrouter-assistant").
 
 **Important**: The v1beta API requires you to explicitly pass the API key in the config. It does not automatically read from environment variables like the core API does.
 
+## ⚠️ New Builder API (Upcoming)
+
+The latest documentation and deprecation guide show a newer builder-style API:
+
+```go
+v1beta.NewBuilder().
+    WithName("agent").
+    WithLLM(...)
+    WithAPIKey(...)
+However, this API is not yet available in the current release (v0.5.9).
+
+For now, you should use the Config-based approach:
+
+```go
+v1beta.NewBuilder("agent-name").
+    WithConfig(config).
+    Build()
+```
+
 ### 2. Preset Chat Agent
 
 Uses a complete `Config` struct with the builder pattern:
