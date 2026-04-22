@@ -42,7 +42,7 @@ The demo tracks and displays:
 
 2. **Build the demo**:
    ```bash
-   cd examples/vnext/conversation-memory-stream-demo
+   cd examples/conversation-memory-stream-demo
    go build
    ```
 
@@ -97,7 +97,7 @@ The demo tracks and displays:
 The streaming demo uses these configuration options:
 
 ```go
-Streaming: &vnext.StreamingConfig{
+Streaming: &v1beta.StreamingConfig{
     Enabled:          true,
     BufferSize:       100,   // Channel buffer size
     FlushInterval:    50,    // Flush every 50ms
@@ -120,8 +120,8 @@ Streaming: &vnext.StreamingConfig{
 ### 1. Stream Creation
 ```go
 stream, err := agent.RunStream(ctx, userInput,
-    vnext.WithThoughts(),      // Optional: show thinking
-    vnext.WithBufferSize(100), // Buffer size
+    v1beta.WithThoughts(),      // Optional: show thinking
+    v1beta.WithBufferSize(100), // Buffer size
 )
 ```
 
@@ -170,7 +170,7 @@ The counter shows **2 queries per turn**:
 
 ### Change the Model
 ```go
-LLM: vnext.LLMConfig{
+LLM: v1beta.LLMConfig{
     Provider:    "ollama",
     Model:       "llama3.2", // Change model here
     Temperature: 0.7,
@@ -180,9 +180,9 @@ LLM: vnext.LLMConfig{
 
 ### Adjust Memory Settings
 ```go
-Memory: &vnext.MemoryConfig{
+Memory: &v1beta.MemoryConfig{
     Provider: "memory",
-    RAG: &vnext.RAGConfig{
+    RAG: &v1beta.RAGConfig{
         MaxTokens:       2000, // Increase context size
         PersonalWeight:  0.8,  // Weight for conversation history
         KnowledgeWeight: 0.2,  // Weight for knowledge base
@@ -193,7 +193,7 @@ Memory: &vnext.MemoryConfig{
 
 ### Tune Streaming Behavior
 ```go
-Streaming: &vnext.StreamingConfig{
+Streaming: &v1beta.StreamingConfig{
     FlushInterval:    20,   // Faster streaming (20ms)
     IncludeThoughts:  false, // Hide thinking process
 }

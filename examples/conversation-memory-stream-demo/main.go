@@ -11,7 +11,7 @@ import (
 
 	_ "github.com/agenticgokit/agenticgokit/plugins/llm/ollama"
 	_ "github.com/agenticgokit/agenticgokit/plugins/memory/chromem" // Register chromem provider
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 )
 
 func main() {
@@ -32,28 +32,28 @@ func main() {
 	ctx := context.Background()
 
 	// Step 1: Create agent with memory integration
-	agent, err := vnext.NewBuilder("chat-assistant").
-		WithConfig(&vnext.Config{
+	agent, err := v1beta.NewBuilder("chat-assistant").
+		WithConfig(&v1beta.Config{
 			Name: "chat-assistant",
 			SystemPrompt: `You are a helpful and friendly chat assistant.
 You remember details from our conversation and provide personalized responses.
 Be conversational and engaging while being helpful.`,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "ollama",
 				Model:       "gemma3:1b",
 				Temperature: 0.7,
 				MaxTokens:   2000, // Allow detailed responses
 			},
-			Memory: &vnext.MemoryConfig{
+			Memory: &v1beta.MemoryConfig{
 				// Provider defaults to "chromem" - embedded vector database
-				RAG: &vnext.RAGConfig{
+				RAG: &v1beta.RAGConfig{
 					MaxTokens:       1000,
 					PersonalWeight:  0.8, // Prioritize conversation history
 					KnowledgeWeight: 0.2,
 					HistoryLimit:    20, // Keep last 20 messages
 				},
 			},
-			Streaming: &vnext.StreamingConfig{
+			Streaming: &v1beta.StreamingConfig{
 				Enabled:       true,
 				BufferSize:    100,
 				FlushInterval: 50, // 50ms flush interval for smooth streaming
@@ -115,16 +115,16 @@ Be conversational and engaging while being helpful.`,
 
 		for chunk := range stream.Chunks() {
 			switch chunk.Type {
-			case vnext.ChunkTypeDelta:
+			case v1beta.ChunkTypeDelta:
 				// Stream the actual response text
 				fmt.Print(chunk.Delta)
 				fullResponse.WriteString(chunk.Delta)
 
-			case vnext.ChunkTypeError:
+			case v1beta.ChunkTypeError:
 				// Handle streaming errors
 				fmt.Printf("\nStream error: %v\n", chunk.Error)
 
-			case vnext.ChunkTypeDone:
+			case v1beta.ChunkTypeDone:
 				// Streaming completed
 				fmt.Println() // New line after response
 			}

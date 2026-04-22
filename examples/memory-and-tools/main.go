@@ -8,7 +8,7 @@ import (
 
 	_ "github.com/agenticgokit/agenticgokit/plugins/llm/ollama"
 	_ "github.com/agenticgokit/agenticgokit/plugins/memory/chromem" // Register chromem provider
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 )
 
 func main() {
@@ -19,20 +19,20 @@ func main() {
 
 	// Step 1: Create agent with memory integration enabled
 	// The agent will automatically manage conversation history
-	agent, err := vnext.NewBuilder("personal-assistant").
-		WithConfig(&vnext.Config{
+	agent, err := v1beta.NewBuilder("personal-assistant").
+		WithConfig(&v1beta.Config{
 			Name: "personal-assistant",
 			SystemPrompt: `You are a helpful personal assistant. 
 Remember information from our conversation and provide personalized responses.`,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "ollama",
 				Model:       "gemma3:1b",
 				Temperature: 0.7,
 				MaxTokens:   80, // Short responses for faster demo
 			},
-			Memory: &vnext.MemoryConfig{
+			Memory: &v1beta.MemoryConfig{
 				// Provider defaults to "chromem" - embedded vector database
-				RAG: &vnext.RAGConfig{
+				RAG: &v1beta.RAGConfig{
 					MaxTokens:       500,
 					PersonalWeight:  0.6,
 					KnowledgeWeight: 0.4,

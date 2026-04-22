@@ -1,6 +1,6 @@
 # Memory Integration Example
 
-This example demonstrates how to use the memory integration features in AgenticGoKit's vnext package. It shows how to:
+This example demonstrates how to use the memory integration features in AgenticGoKit's v1beta package. It shows how to:
 
 ## Features Demonstrated
 
@@ -49,7 +49,7 @@ The agent automatically:
 ollama list  # Check gemma3:1b is available
 
 # Run the example
-cd examples/vnext/memory-and-tools
+cd examples/memory-and-tools
 go run main.go
 ```
 
@@ -85,7 +85,7 @@ Example:
 ## RAG Configuration
 
 ```go
-RAG: &vnext.RAGConfig{
+RAG: &v1beta.RAGConfig{
     MaxTokens:       1000, // Maximum tokens for context window
     PersonalWeight:  0.6,  // Higher = more weight on personal context
     KnowledgeWeight: 0.4,  // Higher = more weight on knowledge base
@@ -95,9 +95,9 @@ RAG: &vnext.RAGConfig{
 
 ## Next Steps
 
-- Check `test/vnext/memory/` for comprehensive memory integration tests
-- See `core/vnext/utils.go` for `EnrichWithMemory()` and RAG helper functions
-- Explore `core/vnext/agent_impl.go` to see how memory is integrated in `Run()`
+- Check `test/v1beta/memory/` for comprehensive memory integration tests
+- See `v1beta/utils.go` for `EnrichWithMemory()` and RAG helper functions
+- Explore `v1beta/agent_impl.go` to see how memory is integrated in `Run()`
 
 ## Key Takeaway
 

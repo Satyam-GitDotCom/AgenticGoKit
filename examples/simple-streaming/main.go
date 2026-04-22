@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 )
 
 func main() {
@@ -15,12 +15,12 @@ func main() {
 	fmt.Println()
 
 	// Create a simple agent with Ollama
-	agent, err := vnext.NewBuilder("simple-streamer").
-		WithConfig(&vnext.Config{
+	agent, err := v1beta.NewBuilder("simple-streamer").
+		WithConfig(&v1beta.Config{
 			Name:         "simple-streamer",
 			SystemPrompt: "You are a helpful assistant. Be concise but friendly.",
 			Timeout:      30 * time.Second,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "ollama",
 				Model:       "gemma3:1b",
 				Temperature: 0.7,
@@ -60,12 +60,12 @@ func main() {
 		}
 
 		switch chunk.Type {
-		case vnext.ChunkTypeDelta:
+		case v1beta.ChunkTypeDelta:
 			// Print each token immediately
 			fmt.Print(chunk.Delta)
 			fullResponse += chunk.Delta
 			tokenCount++
-		case vnext.ChunkTypeDone:
+		case v1beta.ChunkTypeDone:
 			fmt.Println("\n\n✅ Streaming completed!")
 		}
 	}

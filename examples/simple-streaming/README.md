@@ -1,6 +1,6 @@
 # Simple Streaming Example
 
-This example demonstrates the basic streaming functionality of AgenticGoKit vNext.
+This example demonstrates the basic streaming functionality of AgenticGoKit v1beta.
 
 ## What it does
 
@@ -12,7 +12,7 @@ This example demonstrates the basic streaming functionality of AgenticGoKit vNex
 ## How to run
 
 ```bash
-cd examples/vnext/simple-streaming
+cd examples/simple-streaming
 go run main.go
 ```
 

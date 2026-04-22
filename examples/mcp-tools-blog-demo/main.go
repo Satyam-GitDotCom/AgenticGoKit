@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 
 	// MCP plugins: provide the manager/transport + registry
 	_ "github.com/agenticgokit/agenticgokit/plugins/mcp/default"
@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== vNext MCP + Tools Blog Demo ===")
+	fmt.Println("=== v1beta MCP + Tools Blog Demo ===")
 
 	if err := runExplicitServer(); err != nil {
 		log.Printf("explicit server demo: %v\n", err)
@@ -33,7 +33,7 @@ func main() {
 func runExplicitServer() error {
 	ctx := context.Background()
 
-	server := vnext.MCPServer{
+	server := v1beta.MCPServer{
 		Name:    "blog-http-sse",
 		Type:    "http_sse",
 		Address: "localhost",
@@ -41,12 +41,12 @@ func runExplicitServer() error {
 		Enabled: true,
 	}
 
-	agent, err := vnext.NewBuilder("mcp-blog-agent").
-		WithConfig(&vnext.Config{
+	agent, err := v1beta.NewBuilder("mcp-blog-agent").
+		WithConfig(&v1beta.Config{
 			Name:         "mcp-blog-agent",
 			SystemPrompt: "You are a helpful assistant with access to tools. Use them when helpful and return clear answers.",
 			Timeout:      60 * time.Second,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "ollama",
 				Model:       "gemma3:1b",
 				Temperature: 0.7,
@@ -54,8 +54,8 @@ func runExplicitServer() error {
 			},
 		}).
 		WithTools(
-			vnext.WithMCP(server),
-			vnext.WithToolTimeout(30*time.Second),
+			v1beta.WithMCP(server),
+			v1beta.WithToolTimeout(30*time.Second),
 		).
 		Build()
 	if err != nil {
@@ -65,7 +65,7 @@ func runExplicitServer() error {
 	fmt.Printf("Connected server: %s (%s:%d)\n", server.Name, server.Address, server.Port)
 
 	// Show discovered tools (internal + MCP)
-	tools, err := vnext.DiscoverTools()
+	tools, err := v1beta.DiscoverTools()
 	if err != nil {
 		fmt.Printf("Warning: discover tools: %v\n", err)
 	} else {
@@ -76,7 +76,7 @@ func runExplicitServer() error {
 	}
 
 	// Execute an internal tool directly (echo)
-	res, err := vnext.ExecuteToolByName(ctx, "echo", map[string]interface{}{"message": "hello from direct call"})
+	res, err := v1beta.ExecuteToolByName(ctx, "echo", map[string]interface{}{"message": "hello from direct call"})
 	if err != nil {
 		fmt.Printf("echo tool error: %v\n", err)
 	} else {
@@ -85,7 +85,7 @@ func runExplicitServer() error {
 
 	// Drive via LLM-like TOOL_CALL output
 	llmOutput := "I'll echo something first.\nTOOL_CALL{\"name\": \"echo\", \"args\": {\"message\": \"from llm call\"}}"
-	toolResults, _ := vnext.ExecuteToolsFromLLMResponse(ctx, llmOutput)
+	toolResults, _ := v1beta.ExecuteToolsFromLLMResponse(ctx, llmOutput)
 	for i, tr := range toolResults {
 		fmt.Printf("tool call %d -> success=%v content=%v error=%s\n", i+1, tr.Success, tr.Content, tr.Error)
 	}
@@ -102,12 +102,12 @@ func runExplicitServer() error {
 func runDiscovery() error {
 	ctx := context.Background()
 
-	agent, err := vnext.NewBuilder("mcp-discovery-agent").
-		WithConfig(&vnext.Config{
+	agent, err := v1beta.NewBuilder("mcp-discovery-agent").
+		WithConfig(&v1beta.Config{
 			Name:         "mcp-discovery-agent",
 			SystemPrompt: "You are a helpful assistant with discovered MCP tools.",
 			Timeout:      60 * time.Second,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "ollama",
 				Model:       "gemma3:1b",
 				Temperature: 0.7,
@@ -115,8 +115,8 @@ func runDiscovery() error {
 			},
 		}).
 		WithTools(
-			vnext.WithMCPDiscovery(8080, 8081, 8090, 8100, 8811, 8812),
-			vnext.WithToolTimeout(30*time.Second),
+			v1beta.WithMCPDiscovery(8080, 8081, 8090, 8100, 8811, 8812),
+			v1beta.WithToolTimeout(30*time.Second),
 		).
 		Build()
 	if err != nil {
@@ -130,5 +130,3 @@ func runDiscovery() error {
 	fmt.Printf("Agent response (discovery): %s (duration=%v)\n", ar.Content, ar.Duration)
 	return nil
 }
-
-
