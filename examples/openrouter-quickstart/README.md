@@ -1,6 +1,6 @@
-# OpenRouter QuickStart - vNext API Example
+# OpenRouter QuickStart - v1beta API Example
 
-This example demonstrates how to use the AgenticGoKit vNext API with OpenRouter as the LLM provider.
+This example demonstrates how to use the AgenticGoKit v1beta API with OpenRouter as the LLM provider.
 
 ## Overview
 
@@ -33,7 +33,7 @@ OpenRouter provides unified access to multiple LLM providers through a single AP
 
 ```powershell
 # Navigate to the example directory
-cd examples/vnext/openrouter-quickstart
+cd examples/openrouter-quickstart
 
 # Run the example
 go run main.go
@@ -49,45 +49,64 @@ Creates an agent using a complete `Config` struct with API key from environment:
 // Read API key from environment
 apiKey := os.Getenv("OPENROUTER_API_KEY")
 
-config := &vnext.Config{
+config := &v1beta.Config{
     Name:         "openrouter-assistant",
     SystemPrompt: "You are a helpful assistant.",
     Timeout:      30 * time.Second,
-    LLM: vnext.LLMConfig{
+    LLM: v1beta.LLMConfig{
         Provider:    "openrouter",
-        Model:       "openai/gpt-3.5-turbo",
+        Model:       "openai/gpt-3.5-turbo", // Model availability may change see https://openrouter.ai/models
         APIKey:      apiKey, // Pass API key explicitly
         Temperature: 0.7,
         MaxTokens:   500,
     },
 }
 
-agent, err := vnext.NewBuilder("openrouter-assistant").
+agent, err := v1beta.NewBuilder("openrouter-assistant").
     WithConfig(config).
     Build()
 ```
 
-**Important**: The vNext API requires you to explicitly pass the API key in the config. It does not automatically read from environment variables like the core API does.
+**Important**: The v1beta API requires you to explicitly pass the API key in the config. It does not automatically read from environment variables like the core API does.
+
+## ⚠️ New Builder API (Upcoming)
+
+The latest documentation and deprecation guide show a newer builder-style API:
+
+```go
+v1beta.NewBuilder().
+    WithName("agent").
+    WithLLM(...)
+    WithAPIKey(...)
+However, this API is not yet available in the current release (v0.5.9).
+
+For now, you should use the Config-based approach:
+
+```go
+v1beta.NewBuilder("agent-name").
+    WithConfig(config).
+    Build()
+```
 
 ### 2. Preset Chat Agent
 
 Uses a complete `Config` struct with the builder pattern:
 
 ```go
-chatConfig := &vnext.Config{
+chatConfig := &v1beta.Config{
     Name:         "chat-bot",
     SystemPrompt: "You are a conversational assistant.",
     Timeout:      30 * time.Second,
-    LLM: vnext.LLMConfig{
+    LLM: v1beta.LLMConfig{
         Provider:    "openrouter",
-        Model:       "anthropic/claude-3-haiku",
+        Model:       "anthropic/claude-3-haiku", // Model availability may change see https://openrouter.ai/models
         APIKey:      apiKey, // Must include API key
         Temperature: 0.7,
         MaxTokens:   100,
     },
 }
 
-agent, err := vnext.NewBuilder("chat-bot").
+agent, err := v1beta.NewBuilder("chat-bot").
     WithConfig(chatConfig).
     Build()
 ```
@@ -98,12 +117,12 @@ Demonstrates real-time streaming with chunk processing:
 
 ```go
 stream, err := agent.RunStream(ctx, "Write a haiku about coding.",
-    vnext.WithBufferSize(10),
-    vnext.WithThoughts(),
+    v1beta.WithBufferSize(10),
+    v1beta.WithThoughts(),
 )
 
 for chunk := range stream.Chunks() {
-    if chunk.Type == vnext.ChunkTypeDelta {
+    if chunk.Type == v1beta.ChunkTypeDelta {
         fmt.Print(chunk.Delta)
     }
 }
@@ -123,7 +142,7 @@ Tests different LLM providers available through OpenRouter:
 Uses `RunOptions` to get comprehensive execution information:
 
 ```go
-opts := vnext.RunWithDetailedResult().
+opts := v1beta.RunWithDetailedResult().
     SetTimeout(30 * time.Second).
     AddContext("request_id", "demo-123")
 
@@ -135,7 +154,7 @@ result, err := agent.RunWithOptions(ctx, query, opts)
 Enables OpenRouter rankings and analytics by providing site information:
 
 ```go
-LLM: vnext.LLMConfig{
+LLM: v1beta.LLMConfig{
     Provider:    "openrouter",
     Model:       "openai/gpt-3.5-turbo",
     SiteURL:     "https://myapp.com",     // Your app URL
@@ -150,7 +169,7 @@ This sets the `HTTP-Referer` and `X-Title` headers in requests to OpenRouter.
 Implements custom logic with LLM fallback:
 
 ```go
-customHandler := func(ctx context.Context, input string, caps *vnext.Capabilities) (string, error) {
+customHandler := func(ctx context.Context, input string, caps *v1beta.Capabilities) (string, error) {
     if len(input) < 10 {
         // Short query: expand it
         return caps.LLM(
@@ -168,25 +187,25 @@ customHandler := func(ctx context.Context, input string, caps *vnext.Capabilitie
 Uses a preset configuration with custom system prompt:
 
 ```go
-config8 := &vnext.Config{
+config8 := &v1beta.Config{
     Name:         "simple-agent",
     SystemPrompt: "You are a helpful assistant specialized in programming languages.",
     Timeout:      30 * time.Second,
-    LLM: vnext.LLMConfig{
+    LLM: v1beta.LLMConfig{
         Provider:    "openrouter",
-        Model:       "openai/gpt-3.5-turbo",
+        Model:       "openai/gpt-3.5-turbo",  // Model availability may change see https://openrouter.ai/models
         APIKey:      apiKey, // API key required
         Temperature: 0.7,
         MaxTokens:   200,
     },
 }
 
-agent, err := vnext.NewBuilder("simple-agent").
+agent, err := v1beta.NewBuilder("simple-agent").
     WithConfig(config8).
     Build()
 ```
 
-**Note**: While the vNext API has `WithLLM()` and `WithLLMConfig()` options, they don't support setting the API key. Always use the full `Config` struct approach for OpenRouter.
+**Note**: While the v1beta API has `WithLLM()` and `WithLLMConfig()` options, they don't support setting the API key. Always use the full `Config` struct approach for OpenRouter.
 
 ## OpenRouter Models
 
@@ -219,7 +238,7 @@ For the full list of available models and pricing, visit [OpenRouter Models](htt
 
 ### API Key Configuration
 
-**Important**: The vNext framework requires explicit API key configuration. Unlike the core API which automatically reads environment variables, you must:
+**Important**: The v1beta framework requires explicit API key configuration. Unlike the core API which automatically reads environment variables, you must:
 
 1. Read the environment variable yourself:
    ```go
@@ -228,7 +247,7 @@ For the full list of available models and pricing, visit [OpenRouter Models](htt
 
 2. Pass it explicitly in the config:
    ```go
-   LLM: vnext.LLMConfig{
+   LLM: v1beta.LLMConfig{
        APIKey: apiKey, // Required!
        // ... other settings
    }
@@ -246,9 +265,9 @@ For the full list of available models and pricing, visit [OpenRouter Models](htt
 
 2. **Config Pattern**: Always use the full `Config` struct with API key:
    ```go
-   config := &vnext.Config{
-       LLM: vnext.LLMConfig{
-           APIKey: apiKey, // Required for vNext API
+   config := &v1beta.Config{
+       LLM: v1beta.LLMConfig{
+           APIKey: apiKey, // Required for v1beta API
            // ... other settings
        },
    }
@@ -288,11 +307,11 @@ export OPENROUTER_API_KEY="sk-or-v1-your-api-key-here"
 This means the API key wasn't passed in the config. Make sure you're setting it:
 
 ```go
-config := &vnext.Config{
-    LLM: vnext.LLMConfig{
+config := &v1beta.Config{
+    LLM: v1beta.LLMConfig{
         Provider: "openrouter",
         APIKey:   apiKey, // ← Must be set!
-        Model:    "openai/gpt-3.5-turbo",
+        Model:    "openai/gpt-3.5-turbo",  // Model availability may change see https://openrouter.ai/models
     },
 }
 ```
@@ -312,10 +331,9 @@ Timeout: 60 * time.Second,  // Increase from 30s to 60s
 
 ## Related Documentation
 
-- [vNext Framework README](../../../core/vnext/README.md)
-- [OpenRouter Integration Design](../../../docs/design/OpenRouterIntegration.md)
-- [Streaming Guide](../../../core/vnext/STREAMING_GUIDE.md)
-- [Migration Guide](../../../core/vnext/MIGRATION_GUIDE.md)
+- [v1beta Framework README](../../docs/v1beta/README.md)
+- [Streaming Guide](../../docs/v1beta/streaming.md)
+- [Migration Guide](../../docs/guides/migration-guide.md)
 
 ## Support
 
