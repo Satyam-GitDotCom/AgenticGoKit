@@ -11,7 +11,7 @@ import (
 
 	_ "github.com/agenticgokit/agenticgokit/plugins/llm/ollama"
 	_ "github.com/agenticgokit/agenticgokit/plugins/memory/chromem" // Register chromem provider
-	vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	v1beta "github.com/agenticgokit/agenticgokit/v1beta"
 )
 
 func main() {
@@ -31,22 +31,23 @@ func main() {
 	ctx := context.Background()
 
 	// Step 1: Create agent with memory integration
-	agent, err := vnext.NewBuilder("chat-assistant").
-		WithConfig(&vnext.Config{
+	agent, err := v1beta.NewBuilder("chat-assistant").
+		WithConfig(&v1beta.Config{
 			Name: "chat-assistant",
 			SystemPrompt: `You are a helpful and friendly chat assistant.
 You remember details from our conversation and provide personalized responses.
 Be conversational and engaging while being helpful.`,
-			LLM: vnext.LLMConfig{
+			LLM: v1beta.LLMConfig{
 				Provider:    "ollama",
-				Model:       "gemma3:1b",
+				Model:       "llama3.1:8b",
 				Temperature: 0.7,
 				MaxTokens:   2000, // Allow detailed responses
 			},
-			Memory: &vnext.MemoryConfig{
+			Memory: &v1beta.MemoryConfig{
 				Enabled: true, // Explicitly enable memory
 				// Provider defaults to "chromem" - embedded vector database
-				RAG: &vnext.RAGConfig{
+				Provider: "chromem",
+				RAG: &v1beta.RAGConfig{
 					MaxTokens:       1000,
 					PersonalWeight:  0.8, // Prioritize conversation history
 					KnowledgeWeight: 0.2,
@@ -125,7 +126,8 @@ Be conversational and engaging while being helpful.`,
 
 	// We need to access the memory provider to inspect stored data
 	// Since the agent encapsulates the memory, we'll create a simple demonstration
-	// by showing that memory persists across runs
+	// This demo only shows memory within a session.
+	// Memory does NOT persist across application restarts.
 
 	fmt.Println("Conversation Summary:")
 	fmt.Println("  - The agent automatically stored each user message and assistant response")
