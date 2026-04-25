@@ -87,7 +87,7 @@ func (st *AgentStageTimer) Print(title string) {
 	fmt.Printf("%-40s %10v  %6.1f%%\n", "TOTAL", total, 100.0)
 }
 
-func main() {
+func AgentStageProfiler() {
 	flag.Parse()
 
 	ctx := context.Background()
@@ -104,7 +104,7 @@ func main() {
 			SystemPrompt: `You are a helpful assistant. Don't ask follow-up questions.`,
 			LLM: vnext.LLMConfig{
 				Provider:    "ollama",
-				Model:       "granite4:latest",
+				Model:       "qwen2.5-coder:7b",
 				Temperature: 0.0,
 				MaxTokens:   150,
 			},
@@ -171,4 +171,8 @@ func main() {
 			(runDuration - 2*time.Second).Seconds(),
 			((runDuration - 2*time.Second).Seconds() / runDuration.Seconds() * 100))
 	}
+}
+
+func main() {
+	AgentStageProfiler()
 }

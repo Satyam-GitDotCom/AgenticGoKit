@@ -52,7 +52,7 @@ func init() {
 	vnext.RegisterInternalTool("check_weather", func() vnext.Tool { return &WeatherTool{} })
 }
 
-func main() {
+func agentReasoning() {
 	flag.Parse()
 
 	ctx := context.Background()
@@ -79,7 +79,7 @@ func main() {
 			SystemPrompt: `You are a helpful weather assistant. Answer questions about weather using the available tools.`,
 			LLM: vnext.LLMConfig{
 				Provider:    "ollama",
-				Model:       "granite4:latest",
+				Model:       "qwen2.5-coder:7b",
 				Temperature: 0.0,
 				MaxTokens:   150,
 			},
@@ -141,4 +141,8 @@ func main() {
 		fmt.Println("Expected: Faster (~2s) but no multi-step reasoning capability")
 	}
 	fmt.Printf("Measured: %.3fs\n", runDuration.Seconds())
+}
+
+func main() {
+	agentReasoning()
 }

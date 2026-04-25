@@ -69,7 +69,7 @@ func init() {
 
 // No manual extraction or direct-call fallback; rely on native tool calling.
 
-func main() {
+func WeatherProfile() {
 	flag.Parse()
 
 	// Start CPU profiling if requested
@@ -109,10 +109,10 @@ func main() {
 	agent, err := vnext.NewBuilder("weather-agent").
 		WithConfig(&vnext.Config{
 			Name:         "weather-agent",
-			SystemPrompt: `You are a helpful assistant.ODnt ask followup questions.`,
+			SystemPrompt: `You are a helpful assistant. Don't ask followup questions.`,
 			LLM: vnext.LLMConfig{
 				Provider:    "ollama",
-				Model:       "granite4:latest",
+				Model:       "qwen2.5-coder:7b",
 				Temperature: 0.0,
 				MaxTokens:   150,
 			},
@@ -191,4 +191,8 @@ func main() {
 			log.Fatal("could not write memory profile: ", err)
 		}
 	}
+}
+
+func main() {
+	WeatherProfile()
 }

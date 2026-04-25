@@ -163,6 +163,10 @@ func (m *vnextMockMemory) SearchKnowledge(ctx context.Context, query string, opt
 func (m *vnextMockMemory) BuildContext(ctx context.Context, query string, opts ...vnext.ContextOption) (*vnext.RAGContext, error) {
 	return nil, nil
 }
+func (m *vnextMockMemory) AddMessage(ctx context.Context, role, content string) error {
+	return nil
+}
+
 
 func TestResultMemoryContext(t *testing.T) {
 	// Verify we can populate MemoryContext

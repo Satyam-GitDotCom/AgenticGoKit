@@ -1,18 +1,18 @@
 package main
 
 import (
-"context"
-"flag"
-"fmt"
-"log"
-"time"
+	"context"
+	"flag"
+	"fmt"
+	"log"
+	"time"
 
-_ "github.com/agenticgokit/agenticgokit/plugins/llm/ollama"
-vnext "github.com/agenticgokit/agenticgokit/v1beta"
+	_ "github.com/agenticgokit/agenticgokit/plugins/llm/ollama"
+	vnext "github.com/agenticgokit/agenticgokit/v1beta"
 )
 
 var (
-city = flag.String("city", "", "city to query")
+	city = flag.String("city", "", "city to query")
 )
 
 type WeatherTool struct{}
@@ -51,7 +51,7 @@ func init() {
 	vnext.RegisterInternalTool("check_weather", func() vnext.Tool { return &WeatherTool{} })
 }
 
-func main() {
+func AgentTimingDebug() {
 	flag.Parse()
 
 	ctx := context.Background()
@@ -65,7 +65,7 @@ func main() {
 			SystemPrompt: `You are a helpful assistant. Don't ask follow-up questions.`,
 			LLM: vnext.LLMConfig{
 				Provider:    "ollama",
-				Model:       "granite4:latest",
+				Model:       "qwen2.5-coder:7b",
 				Temperature: 0.0,
 				MaxTokens:   150,
 			},
@@ -90,7 +90,7 @@ func main() {
 
 	for i, cityName := range cities {
 		fmt.Printf("Run %d (%s):\n", i+1, cityName)
-		
+
 		stageStart := time.Now()
 		query := fmt.Sprintf("will it rain in %s", cityName)
 		stageDuration := time.Since(stageStart)
@@ -108,4 +108,8 @@ func main() {
 		fmt.Printf("  Total agent.Run(): %v\n", totalDuration)
 		fmt.Printf("  Response: %v\n\n", res)
 	}
+}
+
+func main() {
+	AgentTimingDebug()
 }

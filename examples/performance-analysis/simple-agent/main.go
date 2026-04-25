@@ -14,7 +14,7 @@ func main() {
 			Name: "Simple Agent",
 			LLM: agk.LLMConfig{
 				Provider: "ollama",
-				Model:    "gemma3:latest",
+				Model:    "qwen2.5-coder:7b",
 			},
 			Timeout: 30 * time.Second,
 		}).Build()

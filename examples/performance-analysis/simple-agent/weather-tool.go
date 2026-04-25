@@ -56,7 +56,7 @@ func init() {
 
 // No manual extraction or direct-call fallback; rely on native tool calling.
 
-func main() {
+func Weathertool() {
 	ctx := context.Background()
 
 	agent, err := vnext.NewBuilder("weather-agent").
@@ -65,7 +65,7 @@ func main() {
 			SystemPrompt: `You are a helpful assistant. Don't ask followup questions.`,
 			LLM: vnext.LLMConfig{
 				Provider:    "ollama",
-				Model:       "qwen2.5:3b",
+				Model:       "qwen2.5-coder:7b",
 				Temperature: 0.0,
 				MaxTokens:   150,
 			},
@@ -90,4 +90,8 @@ func main() {
 	}
 	fmt.Printf("   Assistant: %s\n", res)
 	//fmt.Printf("   Tools used: %v\n\n", res)
+}
+
+func main() {
+	Weathertool()
 }

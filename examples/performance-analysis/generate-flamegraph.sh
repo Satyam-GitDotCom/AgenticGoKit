@@ -4,8 +4,10 @@
 
 echo "=== Generating Flame Graphs for Two-LLM-Call Evidence ==="
 
-PROFILE_DIR="/home/kunal/work/agenticgokit/examples/performance-analysis/simple-agent"
-OUTPUT_DIR="/home/kunal/work/agenticgokit/docs/blog/images"
+# Get relative paths based on script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROFILE_DIR="$SCRIPT_DIR/simple-agent"
+OUTPUT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)/docs/blog/images"
 BINARY="$PROFILE_DIR/weather-profile"
 
 mkdir -p "$OUTPUT_DIR"

@@ -111,7 +111,7 @@ func init() {
 	vnext.RegisterInternalTool("check_weather", func() vnext.Tool { return &WeatherTool{} })
 }
 
-func main() {
+func agentLLMCounter() {
 	flag.Parse()
 
 	ctx := context.Background()
@@ -125,7 +125,7 @@ func main() {
 			SystemPrompt: `You are a helpful assistant. Don't ask follow-up questions.`,
 			LLM: vnext.LLMConfig{
 				Provider:    "ollama",
-				Model:       "granite4:latest",
+				Model:       "qwen2.5-coder:7b",
 				Temperature: 0.0,
 				MaxTokens:   150,
 			},
@@ -195,4 +195,8 @@ func main() {
 	}
 
 	instrumentedProvider.PrintStats()
+}
+
+func main() {
+	agentLLMCounter()
 }

@@ -1,0 +1,3 @@
+# Enforce Unix line endings (LF) for all shell scripts
+# This prevents bash parse errors on WSL or Linux when cloning on Windows
+*.sh text eol=lf
