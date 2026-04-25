@@ -1,6 +1,6 @@
 # Conversation Memory Demo
 
-This example demonstrates how to create an interactive chat agent using the core/vnext APIs with memory integration. The agent maintains conversation history and uses it to provide personalized, context-aware responses.
+This example demonstrates how to create an interactive chat agent using the v1beta APIs with memory integration. The agent maintains conversation history and uses it to provide personalized, context-aware responses.
 
 ## Features Demonstrated
 
@@ -8,7 +8,17 @@ This example demonstrates how to create an interactive chat agent using the core
 - **Memory Integration**: Automatic storage of conversation history
 - **Session-Scoped Memory**: Each conversation maintains its own context
 - **RAG (Retrieval-Augmented Generation)**: Context retrieval from chat history
-- **In-Memory Storage**: Uses the `memory` plugin for fast, local storage
+- **In-Memory Storage**: Uses the `chromem` plugin for fast, local storage
+
+## ⚠️ Important: Memory Persistence
+
+This example uses the `chromem` provider, which stores data in memory (RAM).
+
+- Memory is session-scoped
+- Memory is lost when the program exits
+- Restarting the application starts a fresh conversation with no previous memory
+
+To enable persistent memory across runs, use a database-backed provider such as `pgvector`.
 
 ## How Memory Works
 
@@ -30,7 +40,7 @@ When processing new messages, the agent:
 
 ### Storage Details
 
-- **Provider**: `memory` (in-memory implementation)
+- **Provider**: `chromem` (in-memory embedded vector database)
 - **Session Scope**: Each conversation gets its own session ID
 - **RAG Configuration**:
   - Max context tokens: 1000
@@ -50,14 +60,16 @@ When processing new messages, the agent:
 
 2. **Model**: Pull the required model
    ```bash
-   ollama pull gpt-oss:120b-cloud
+   ollama pull llama3.1:8b 
+   # This example uses a lightweight model for faster local execution.
+   # You can replace it with a larger model if your system supports it.
    ```
 
 ### Build and Run
 
 ```bash
 # Navigate to the example directory
-cd examples/vnext/conversation-memory-demo
+cd examples/v1beta/conversation-memory-demo
 
 # Build the example
 go build -o conversation-demo main.go
@@ -91,19 +103,19 @@ Your name is Alex! And you mentioned working with Go and Kubernetes. That's a gr
 ### Agent Configuration
 
 ```go
-agent, err := vnext.NewBuilder("chat-assistant").
-    WithConfig(&vnext.Config{
+agent, err := v1beta.NewBuilder("chat-assistant").
+    WithConfig(&v1beta.Config{
         Name: "chat-assistant",
         SystemPrompt: `You are a helpful and friendly chat assistant...`,
-        LLM: vnext.LLMConfig{
+        LLM: v1beta.LLMConfig{
             Provider:    "ollama",
-            Model:       "gemma3:1b",
+            Model:       "llama3.1:8b",
             Temperature: 0.7,
-            MaxTokens:   150,
+            MaxTokens:   2000,
         },
-        Memory: &vnext.MemoryConfig{
-            Provider: "memory",
-            RAG: &vnext.RAGConfig{
+        Memory: &v1beta.MemoryConfig{
+            Provider: "chromem",
+            RAG: &v1beta.RAGConfig{
                 MaxTokens:       1000,
                 PersonalWeight:  0.8,
                 KnowledgeWeight: 0.2,
@@ -149,7 +161,7 @@ After the conversation ends, the example shows that memory has been stored. In a
 Edit the `LLMConfig` in `main.go`:
 
 ```go
-LLM: vnext.LLMConfig{
+LLM: v1beta.LLMConfig{
     Provider:    "ollama",
     Model:       "llama2:7b",  // Different model
     Temperature: 0.7,
@@ -162,7 +174,7 @@ LLM: vnext.LLMConfig{
 Modify the `RAGConfig` to change memory behavior:
 
 ```go
-RAG: &vnext.RAGConfig{
+RAG: &v1beta.RAGConfig{
     MaxTokens:       2000,  // More context
     PersonalWeight:  0.9,   // Even more focus on conversation
     KnowledgeWeight: 0.1,
@@ -175,7 +187,7 @@ RAG: &vnext.RAGConfig{
 Change the provider in `MemoryConfig`:
 
 ```go
-Memory: &vnext.MemoryConfig{
+Memory: &v1beta.MemoryConfig{
     Provider: "pgvector",  // PostgreSQL with pgvector
     Connection: "postgres://user:pass@localhost/db",
     // ... other config
